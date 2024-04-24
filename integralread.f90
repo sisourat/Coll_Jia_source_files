@@ -142,8 +142,7 @@ open(unit=11,file='ints/twoe_int_tttt.txt',status='old')
           do k=1, mo_num_t
             do l=1, mo_num_t
               read(11,*) mm,nn,oo,pp, r12a,r12b
-!nico              coll_r12_mo(l,k,j,i,iz)= dcmplx(r12a,r12b)
-              coll_r12_mo(l,j,k,i,iz)= dcmplx(r12a,r12b)
+              coll_r12_mo(l,k,j,i,iz)= dcmplx(r12a,r12b)
             enddo
           enddo
         enddo
@@ -154,8 +153,7 @@ open(unit=11,file='ints/twoe_int_tttt.txt',status='old')
           do k=1, mo_num_t
             do l=1, mo_num_t
               !read(11,*) mm,nn,oo,pp, r12a,r12b
-!nico              coll_r12_mo(l,k,j,i,iz)= coll_r12_mo(l,k,j,i,1)!dcmplx(r12a,r12b)
-              coll_r12_mo(l,j,k,i,iz)= coll_r12_mo(l,j,k,i,1)!dcmplx(r12a,r12b)
+              coll_r12_mo(l,k,j,i,iz)= coll_r12_mo(l,k,j,i,1)!dcmplx(r12a,r12b)
             enddo
           enddo
         enddo

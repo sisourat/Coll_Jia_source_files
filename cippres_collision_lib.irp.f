@@ -347,7 +347,10 @@ use propdyn, only : esta
     w1e(:,:) = coll_w1e_mo(:,:,it)
     ovmo(:,:) = coll_ov1e_mo(:,:,it)
     r12mo(:,:,:,:) = coll_r12_mo(:,:,:,:,it)
-    !r12mo(1:mo_num_t,1:mo_num_t,1:mo_num_t,1:mo_num_t)=coll_r12_mo(1:mo_num_t,1:mo_num_t,1:mo_num_t,1:mo_num_t,it,ib_coll)
+!    r12mo(:,:,:,:) = 0d0
+!    r12mo(1:mo_num_t,:1:mo_num_t,1:mo_num_t,1:mo_num_t) = coll_r12_mo(1:mo_num_t,1:mo_num_t,1:mo_num_t,1:mo_num_t,it)
+!    r12mo(1:mo_num_t,mo_num_t+1:mo_num_t+mo_num_p,1:mo_num_t,mo_num_t+1:mo_num_t+mo_num_p) = &
+!    coll_r12_mo(1:mo_num_t,mo_num_t+1:mo_num_t+mo_num_p,1:mo_num_t,mo_num_t+1:mo_num_t+mo_num_p,it)
 
     coll_csf_mat_M(:,:) = dcmplx(0.0D0,0.0D0)
     coll_csf_mat_S(:,:) = dcmplx(0.0D0,0.0D0)
@@ -363,8 +366,15 @@ use propdyn, only : esta
     h1e = dcmplx(0.0D0,0.0D0)!0.0d0
     ov  = dcmplx(0.0D0,0.0D0)!0.0d0
     r12 = dcmplx(0.0D0,0.0D0)!0.0d0
+    write(52,*)"###################################################################"
+    write(52,*)"###################################################################"
+    write(52,*)zgrid(it)
+    write(52,*)"###################################################################"
+    write(52,*)"###################################################################"
     do i=1,Ndet_total  ! 
       do j=1,Ndet_total   !
+
+        write(52,*)detalpha(:,i),detbeta(:,i),detalpha(:,j),detbeta(:,j)
         call lowdin(ne,nea,neb,n_mo,ovmo,w1e,r12mo,detalpha(:,i),detalpha(:,j),detbeta(:,i),detbeta(:,j),ov,h1e,r12)
         coll_csf_mat_M(j,i) = h1e + r12 !real(h1e)!*DBLE(i+j)*0.01D0
         coll_csf_mat_S(j,i) = ov !real(ov)!*DBLE(i+j)*0.02D0

@@ -175,8 +175,10 @@ do i = 1, nea  !e1
        ovmat(k+nea,:) = ovmat(ne-1,:)
        comat2(:,:) = ovmat(1:ne-2,1:ne-2)
 
-       r12 = r12 + r12mo(lb,kb,ja,ia)*(-1d0)**(i+j+k+l+nea+nea)*compute_det(ne-2,comat2)
-       write(52,*)" alpha el for e1 and beta el for e2", lb,kb,ja,ia,r12mo(lb,kb,ja,ia),compute_det(ne-2,comat2)
+!nico       r12 = r12 + r12mo(lb,kb,ja,ia)*(-1d0)**(i+j+k+l+nea+nea)*compute_det(ne-2,comat2)
+       r12 = r12 + r12mo(ia,kb,ja,lb)*(-1d0)**(i+j+k+l+nea+nea)*compute_det(ne-2,comat2)
+       write(52,*)" alpha el for e1 and beta el for e2"
+       write(52,*) ia,kb,ja,lb,r12mo(ia,kb,ja,lb),compute_det(ne-2,comat2)
 
      enddo
    enddo
