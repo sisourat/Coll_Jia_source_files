@@ -318,13 +318,13 @@ use propdyn, only : esta
 !    w1e(i,i) = w1e(i,i) - 2d0/zgrid(1)
 !  enddo
   ovmo(:,:) = coll_ov1e_mo(:,:,1)
-  r12mo(:,:,:,:) = 0d0 !!coll_r12_mo(:,:,:,:,1)
+  r12mo(:,:,:,:) = coll_r12_mo(:,:,:,:,1)
   energy_mat(:,:) = 0d0
   do i=1,Ndet_total  ! 
     call lowdin(ne,nea,neb,n_mo,ovmo,w1e,r12mo,detalpha(:,i),detalpha(:,i),detbeta(:,i),detbeta(:,i),ov,h1e,r12)
     esta(i) = h1e + r12
     energy_mat(i,i) = esta(i)
-!    esta(i) = 0d0
+    esta(i) = 0d0 !nico
   enddo
 
    do i = 1, mo_num_t
@@ -387,9 +387,9 @@ use propdyn, only : esta
 
     !!! compute M - ES
     !!matS1(:,:) = coll_csf_mat_M(:,:) - matmul(energy_mat(:,:),coll_csf_mat_S(:,:))
-    do i=1,Ndet_total  ! 
-      coll_csf_mat_M(i,i) = coll_csf_mat_M(i,i) - energy_mat(i,i)*coll_csf_mat_S(i,i)
-    enddo
+!nico    do i=1,Ndet_total  ! 
+!nico      coll_csf_mat_M(i,i) = coll_csf_mat_M(i,i) - energy_mat(i,i)*coll_csf_mat_S(i,i)
+!nico    enddo
     IPIV=0
    
     !!! compute the S^(-1) and also the S^(-1) * H
