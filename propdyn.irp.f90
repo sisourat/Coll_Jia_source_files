@@ -468,7 +468,7 @@ enddo
 
 ! psi is declared in module general and must be given in main with the proper initial conditions
  Psit(:) = psi(:)
- if(output_cmd==1) write(4321,'(A25,5000(f12.6,1X))') "Psit(n_tot)=psi(:)=",(cdabs(Psit(i))**2,i=1,nsta),sum(cdabs(Psit(:))**2)
+
  RestartABM = .true.
  !if(output_cmd==2) then
  InitStep = abs(timegrid(2)-timegrid(1))
@@ -478,12 +478,7 @@ enddo
  !Abstime = timegrid(3)
  !end if
  !IntPeriod = (timegrid(ntime))/nsave_time
- write(4321,*) "(timegrid(ntime))/nsave_time==,",(timegrid(ntime))/nsave_time
  IntPeriod = (timegrid(ntime)-timegrid(6))/DBLE(nsave_time)
- write(4321,*) "timegrid(ntime),timegrid(5),timegrid(10),nsave_time==",timegrid(ntime),timegrid(5),timegrid(10),nsave_time
- write(4321,*) "timegrid(1),timegrid(2),InitStep=",timegrid(1),timegrid(2)
- write(4321,*) "InitStep,IntPeriod,IntPeriod=",InitStep,IntPeriod,IntPeriod
- write(4321,*) "(timegrid(ntime)-timegrid(5))/nsave_time",timegrid(ntime),timegrid(5),timegrid(10),nsave_time
  do isave_time = 1, nsave_time
   call hpsit(Abstime,Psit,dtPsit,PsiDim,LData,IData,RData,CData)
   !CData= dcmplx(0.0d0,0.0d0)
@@ -504,8 +499,6 @@ enddo
  endif
 
  psi(:) = Psit(:)
-! write(*,*) "Psit(1:2)",Psit(1:2)
- if(output_cmd==1) write(4321,'(A25,5000(f12.6,1X))') "psi(n_tot)=Psit(:)=",(cdabs(psi(i))**2,i=1,nsta),sum(cdabs(psi(:))**2)
  !psit_save(:,isave_time) = psi(:)
  enddo ! isave_time
 

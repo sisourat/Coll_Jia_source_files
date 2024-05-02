@@ -108,19 +108,16 @@ program cippres_prop_collision
   allocate(rmat2intrp(ntime,nsta,nsta),cmat2intrp(ntime,nsta,nsta))
   allocate(matintrp(nsta,nsta))
 
-   !allocate(g_si(1:ntime,1:nsta,1:nsta),g_ddi(1:ntime,1:nsta,1:nsta),g_sdi(1:ntime,1:nsta))
+  !allocate(g_si(1:ntime,1:nsta,1:nsta),g_ddi(1:ntime,1:nsta,1:nsta),g_sdi(1:ntime,1:nsta))
   !allocate(g_si_intrp(1:ntime,1:nsta,1:nsta),g_ddi_intrp(1:ntime,1:nsta,1:nsta),g_sdi_intrp(1:ntime,1:nsta))
 
    timegrid(1:ntime) = tgrid(1:n_time)
    esta=0.0d0
-
 !!!
    zeroVp = Ndet_Bound + Ndet_SE + Ndet_DE
    oneVp  = Ndet_Bound + Ndet_SE + Ndet_DE + Ndet_SC
    twoVp  = Ndet_Bound + Ndet_SE + Ndet_DE + Ndet_SC + Ndet_DC
 !!!
-   !write(21,*) "n_tsta, n_psta, n_tpsta",n_tsta, n_psta, n_tpsta
-   write(*,*) "zeroVp, oneVp, twoVp", zeroVp, oneVp, twoVp
 
    open(unit=20,file='Prop_collision.out')
    write(20,*) n_bimp, Ndet_total
@@ -138,26 +135,12 @@ program cippres_prop_collision
     end do
     FREE coll_couplings
     
-!    if(output_cmd==1) then
-      do it = 1, ntime !! for ZGrid
-        write(997,'(9(f20.12,1X))')zgrid(it),mcoup(it,1,1),mcoup(it,1,2),mcoup(it,1,3)
-        write(998,'(9(f20.12,1X))')zgrid(it),mcoup(it,2,1),mcoup(it,2,2),mcoup(it,2,3)
-        write(999,'(9(f20.12,1X))')zgrid(it),mcoup(it,3,1),mcoup(it,3,2),mcoup(it,3,3)
-      end do
-!        do i=1, nsta
-!          do j=1, nsta
-!            !mcoup(it,j,i) = coll_couplings(j,i,it)
-!            write(999,*) "it,nsta,nsta,j,i,mcoup(it,j,i)",it,nsta,nsta,j,i,mcoup(it,j,i)
-!          end do
-!        end do
-!    end if
 !!!!!!!!!!!!!!!!!
     n_tsta = Ndet_Bound + Ndet_SE + Ndet_DE
     n_tpsta = Ndet_SC
     n_psta = Ndet_DC
 
     do i=1, nsta
-!      esta(i) = mcoup(1,i,i)
       write(*,*)"esta:",i,esta(i)
     end do
 !!!!!!!!!!!!!!!!

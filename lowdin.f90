@@ -103,11 +103,8 @@ do i = 1, nea
   ja =  deta2(j)
   ia =  deta1(i)
   h1e = h1e + (-1d0)**(i+j)*h1emo(ja,ia)*compute_det(ne-1,comat)
-  write(*,*)ia,ja
-  write(*,*)"a",(-1d0)**(i+j),h1emo(ja,ia),compute_det(ne-1,comat)
  enddo
 enddo
-!stop
 
 do i = 1, neb
  do j = 1, neb
@@ -119,17 +116,10 @@ do i = 1, neb
   jb =  detb2(j)
   ib =  detb1(i)
   h1e = h1e + (-1d0)**(nea+i+nea+j)*h1emo(jb,ib)*compute_det(ne-1,comat)
-  write(*,*)ib,jb
-  write(*,*)"b",(-1d0)**(i+j),h1emo(jb,ib),compute_det(ne-1,comat)
  enddo
 enddo
 
-write(*,'(4(i2,1X),2(f20.10,1X))')ja,ia,jb,ib,h1e
-
-!stop
-
 !! compute the 2e repulsion between the two determinants
-       write(52,*)"#################################################################"
 r12 = dcmplx(0.0D0,0.0D0)
 !! alpha el for e1 and e2
 do i = 1, nea  !e1
@@ -149,8 +139,8 @@ do i = 1, nea  !e1
        ovmat(k,:) = ovmat(ne-1,:)
        comat2(:,:) = ovmat(1:ne-2,1:ne-2)
 
+!nico indices to be checked
        r12 = r12 + r12mo(la,ka,ja,ia)*(-1d0)**(i+j+k+l)*compute_det(ne-2,comat2)
-       write(52,*)" alpha el for e1 and e2",la,ka,ja,ia, r12mo(la,ka,ja,ia),compute_det(ne-2,comat2)
 
      enddo
    enddo
@@ -175,17 +165,15 @@ do i = 1, nea  !e1
        ovmat(k+nea,:) = ovmat(ne-1,:)
        comat2(:,:) = ovmat(1:ne-2,1:ne-2)
 
+!nico indices checked
 !nico       r12 = r12 + r12mo(lb,kb,ja,ia)*(-1d0)**(i+j+k+l+nea+nea)*compute_det(ne-2,comat2)
        r12 = r12 + r12mo(ia,kb,ja,lb)*(-1d0)**(i+j+k+l+nea+nea)*compute_det(ne-2,comat2)
-       write(52,*)" alpha el for e1 and beta el for e2"
-       write(52,*) ia,kb,ja,lb,r12mo(ia,kb,ja,lb),compute_det(ne-2,comat2)
 
      enddo
    enddo
 
  enddo
 enddo
-       write(52,*)" NNNNNNNNNNNNN", r12
 
 !! beta el for e1 and alpha el for e2
 !do i = 1, neb  !e1
@@ -205,7 +193,6 @@ enddo
 !       comat2(:,:) = ovmat(1:ne-2,1:ne-2)
 !
 !       r12 = r12 + r12mo(la,ka,jb,ib)*(-1d0)**(i+j+k+l+nea+nea)*compute_det(ne-2,comat2)
-!       write(52,*) "beta el for e1 and alpha el for e2",la,ka,jb,ib, r12mo(la,ka,jb,ib),compute_det(ne-2,comat2)
 !
 !     enddo
 !   enddo
@@ -213,8 +200,6 @@ enddo
 ! enddo
 !enddo
 
-!! beta el for e1 and alpha???? el for e2
-!!! ccjia change
 !! beta el for e1 and beta el for e2
 do i = 1, neb  !e1
  do j = 1, neb  !e1
@@ -232,8 +217,8 @@ do i = 1, neb  !e1
        ovmat(k+nea,:) = ovmat(ne-1,:)
        comat2(:,:) = ovmat(1:ne-2,1:ne-2)
 
+!nico indices to be checked
       r12 = r12 + r12mo(lb,kb,jb,ib)*(-1d0)**(i+j+k+l+2*nea+2*nea)*compute_det(ne-2,comat2)
-      write(52,*) "beta el for e1 and beta el for e2",lb,kb,jb,ib, r12mo(lb,kb,jb,ib),compute_det(ne-2,comat2)
 
      enddo
    enddo

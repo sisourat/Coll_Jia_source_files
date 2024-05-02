@@ -147,15 +147,6 @@ call system('python3.10 $QP_ROOT/plugins/qp_plugins_jia/cippres_20240414/libs_ji
   call ezfio_set_cippres_n_det_csf_cippres(ndet)
   call ezfio_set_cippres_csf_basis(csf_basis_tmp)
 
-write(1234,*) "after call ezfio_set_cippres_csf_basis(csf_basis_tmp)"
-
-  do irun=1,nci_runs
-   do i = 1, ncsf(irun)
-    do j = 1, n_copy(i)
-     write(1234,*) "j,i,irun,csf_basis_tmp(1,1,j,i,irun),==",j,i,irun,csf_basis_tmp(1,1,j,i,irun)
-    enddo
-   enddo
-  enddo
   deallocate(n_sta,prttol,ncsf,ndet,coefdet,csf_basis_tmp)
   deallocate(occ_a,occ_b)
 

@@ -126,7 +126,6 @@ use propdyn, only : esta
   integer :: i, j
   ntdet = 0
   npdet = 0
-  write(*,*) "ccjia: ntdet,npdet",ntdet,npdet
   open(unit=10,file='ints/tcistates_det.txt')
    read(10,*) mo_num_t,ntdet,ntsta
    read(10,*) elec_alpha_num_t, elec_beta_num_t
@@ -153,7 +152,6 @@ use propdyn, only : esta
 
  END_PROVIDER
 
-
  BEGIN_PROVIDER [integer, detalpha, (elec_alpha_num_t+elec_alpha_num_p+1,Ndet_total)]
 &BEGIN_PROVIDER [integer, detbeta, (elec_beta_num_t+elec_beta_num_p+1,Ndet_total)]
 &BEGIN_PROVIDER [integer, tdeta, (elec_alpha_num_t+1,ntdet)]
@@ -179,15 +177,12 @@ use propdyn, only : esta
  pdetb(:,:) = 0
  cpdet(:) = 0.0d0
 
-
  open(unit=10,file='ints/tcistates_det.txt')
     read(10,*)i,j,k
     read(10,*)i,j
   do i = 1, ntdet
     write(*,*) "ntdet=",ntdet
-    !write(*,*) "ccjia:1",ctdet(i), (tdeta(j,i),j=1,elec_alpha_num_t), (tdetb(j,i),j=1,elec_beta_num_t)
     read(10,*)ctdet(i), (tdeta(j,i),j=1,elec_alpha_num_t), (tdetb(j,i),j=1,elec_beta_num_t)
-    !write(*,*) "ccjia:2",ctdet(i), (tdeta(j,i),j=1,elec_alpha_num_t), (tdetb(j,i),j=1,elec_beta_num_t)
   enddo 
   do i = 1, ntsta
     read(10,*)tci_e(i)
@@ -300,7 +295,7 @@ use propdyn, only : esta
     print*, "use less states......"
     stop
   endif
-  write(*,*) "nsta, ntsta, npsta(wrong)",nsta, ntsta, npsta
+
   ncsf = Ndet_total
 
   if(dabs(b_coll-0.0d0) < 0.0001d0 ) goto 1001 !!(to avoid the bcoll==0.0 problem?)
@@ -314,9 +309,7 @@ use propdyn, only : esta
   ov  = dcmplx(0.0D0,0.0D0)!0.0d0
   r12 = dcmplx(0.0D0,0.0D0)!0.0d0
   w1e(:,:) = coll_w1e_mo(:,:,1) 
-!  do i = 1, n_mo
-!    w1e(i,i) = w1e(i,i) - 2d0/zgrid(1)
-!  enddo
+
   ovmo(:,:) = coll_ov1e_mo(:,:,1)
   r12mo(:,:,:,:) = coll_r12_mo(:,:,:,:,1)
   energy_mat(:,:) = 0d0
@@ -326,20 +319,6 @@ use propdyn, only : esta
     energy_mat(i,i) = esta(i)
     esta(i) = 0d0 !nico
   enddo
-
-   do i = 1, mo_num_t
-!     do j = 1, mo_num_t
-     j = i
-!       coll_w1e_mo(j,i,:) = coll_w1e_mo(j,i,:) - h1emott(j,i)
-!     enddo
-   enddo
-
-   do i = 1, mo_num_p
-!    do j = 1, mo_num_p
-     j = i
-!     coll_w1e_mo(j+mo_num_t,i+mo_num_t,:) = coll_w1e_mo(j+mo_num_t,i+mo_num_t,:) - h1emopp(j,i)
-!    enddo
-   enddo
 
 ! here, 'it' means the zGrid.
   do it = 1, n_time
@@ -366,30 +345,16 @@ use propdyn, only : esta
     h1e = dcmplx(0.0D0,0.0D0)!0.0d0
     ov  = dcmplx(0.0D0,0.0D0)!0.0d0
     r12 = dcmplx(0.0D0,0.0D0)!0.0d0
-    write(52,*)"###################################################################"
-    write(52,*)"###################################################################"
-    write(52,*)zgrid(it)
-    write(52,*)"###################################################################"
-    write(52,*)"###################################################################"
+   
     do i=1,Ndet_total  ! 
       do j=1,Ndet_total   !
 
-        write(52,*)detalpha(:,i),detbeta(:,i),detalpha(:,j),detbeta(:,j)
         call lowdin(ne,nea,neb,n_mo,ovmo,w1e,r12mo,detalpha(:,i),detalpha(:,j),detbeta(:,i),detbeta(:,j),ov,h1e,r12)
-        coll_csf_mat_M(j,i) = h1e + r12 !real(h1e)!*DBLE(i+j)*0.01D0
-        coll_csf_mat_S(j,i) = ov !real(ov)!*DBLE(i+j)*0.02D0
-        write(1111,*) i,j,coll_csf_mat_M(j,i),coll_csf_mat_S(j,i)
-        write(1112,*) i,j,h1e,r12,ov
-        !coll_csf_mat_M(i,j) = dconjg(coll_csf_mat_M(j,i))
-        !coll_csf_mat_S(i,j) = dconjg(coll_csf_mat_S(j,i))
+        coll_csf_mat_M(j,i) = h1e + r12 
+        coll_csf_mat_S(j,i) = ov 
       enddo
     enddo
 
-    !!! compute M - ES
-    !!matS1(:,:) = coll_csf_mat_M(:,:) - matmul(energy_mat(:,:),coll_csf_mat_S(:,:))
-!nico    do i=1,Ndet_total  ! 
-!nico      coll_csf_mat_M(i,i) = coll_csf_mat_M(i,i) - energy_mat(i,i)*coll_csf_mat_S(i,i)
-!nico    enddo
     IPIV=0
    
     !!! compute the S^(-1) and also the S^(-1) * H
@@ -408,7 +373,7 @@ use propdyn, only : esta
   deallocate(coll_w1e_mo, coll_ov1e_mo, coll_r12_mo)
   !deallocate
   call cpu_time(t2)
-  print*,t2-t1
+  print*,"Time", t2-t1
   print*,' '
   deallocate(coll_csf_mat,coll_csf_mat_S,coll_csf_mat_M)
 

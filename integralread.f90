@@ -58,14 +58,12 @@ subroutine integralread(h1emott, h1emopp, coll_w1e_mo, coll_ov1e_mo, coll_r12_mo
  open(unit=13,file=filept,status='old')
  open(unit=14,file=filepp,status='old')
 !write(*,*) "now read one e int", impab, bg
- open(unit=12345,file='test_read_int.dat')
 !!!
 !  do ib = ib_count, n_bimp
     read(11,*) bg
     read(12,*) bg
     read(13,*) bg
     read(14,*) bg
-    write(12345,*) "now read one e int", impab, bg
     
     do iz = 1, iz_total
       read(11,*) zg
@@ -133,7 +131,6 @@ subroutine integralread(h1emott, h1emopp, coll_w1e_mo, coll_ov1e_mo, coll_r12_mo
 !write(*,*) "now read two e int", impab, bg
 open(unit=11,file='ints/twoe_int_tttt.txt',status='old')
 !    read(11,*)bg
-    write(12345,*) "now read two e int", impab, bg
     do iz = 1, iz_total
 !      read(11,*)zg
       if(iz==1) then
