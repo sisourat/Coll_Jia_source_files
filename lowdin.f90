@@ -103,6 +103,9 @@ do i = 1, nea
   ja =  deta2(j)
   ia =  deta1(i)
   h1e = h1e + (-1d0)**(i+j)*h1emo(ja,ia)*compute_det(ne-1,comat)
+!  write(*,*)ja,ia,h1emo(ja,ia)
+!  write(*,*)compute_det(ne-1,comat)
+!  write(*,*)"h1e a",h1e
  enddo
 enddo
 
@@ -116,6 +119,7 @@ do i = 1, neb
   jb =  detb2(j)
   ib =  detb1(i)
   h1e = h1e + (-1d0)**(nea+i+nea+j)*h1emo(jb,ib)*compute_det(ne-1,comat)
+!  write(*,*)"h1e b",h1e
  enddo
 enddo
 

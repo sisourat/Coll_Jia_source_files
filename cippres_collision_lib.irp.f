@@ -350,6 +350,7 @@ use propdyn, only : esta
       do j=1,Ndet_total   !
 
         call lowdin(ne,nea,neb,n_mo,ovmo,w1e,r12mo,detalpha(:,i),detalpha(:,j),detbeta(:,i),detbeta(:,j),ov,h1e,r12)
+        !write(*,'(3(i5,1X),4(f20.10,1X))')it,j,i,h1e,r12
         coll_csf_mat_M(j,i) = h1e + r12 
         coll_csf_mat_S(j,i) = ov 
       enddo

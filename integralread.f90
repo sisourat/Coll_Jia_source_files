@@ -48,6 +48,9 @@ subroutine integralread(h1emott, h1emopp, coll_w1e_mo, coll_ov1e_mo, coll_r12_mo
   enddo 
  close(11)
 
+ h1emott(:,:) = 0d0 !nico
+ h1emopp(:,:) = 0d0 !nico
+
  filett= 'ints/'//impab_filename(1:ilen-1)//'/'//'onee_int_tt.txt'
  filetp= 'ints/'//impab_filename(1:ilen-1)//'/'//'onee_int_tp.txt'
  filept= 'ints/'//impab_filename(1:ilen-1)//'/'//'onee_int_pt.txt'

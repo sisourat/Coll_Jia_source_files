@@ -132,6 +132,7 @@ program cippres_prop_collision
     mcoup(:,:,:) = dcmplx(0.0D0,0.0D0)
     do it = 1, ntime !! for ZGrid
       mcoup(it,1:nsta,1:nsta) = coll_couplings(1:nsta,1:nsta,it)
+!      write(*,'(3(f20.10,1X))')zgrid(it),mcoup(it,1,2)
     end do
     FREE coll_couplings
     
