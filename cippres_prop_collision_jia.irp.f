@@ -119,9 +119,6 @@ program cippres_prop_collision
    twoVp  = Ndet_Bound + Ndet_SE + Ndet_DE + Ndet_SC + Ndet_DC
 !!!
 
-   open(unit=20,file='Prop_collision.out')
-   write(20,*) n_bimp, Ndet_total
-   close(20)
    print*,'start dyn'
    do ib = 1, n_bimp
 
@@ -140,10 +137,15 @@ program cippres_prop_collision
     n_tsta = Ndet_Bound + Ndet_SE + Ndet_DE
     n_tpsta = Ndet_SC
     n_psta = Ndet_DC
-
-    do i=1, nsta
-      write(*,*)"esta:",i,esta(i)
-    end do
+   if(ib==1) then
+     open(unit=20,file='Prop_collision.out')
+      write(20,*) n_bimp, Ndet_total
+      do i = 1, nsta
+        write(*,*)"esta:",i,real(esta(i))
+        write(20,*)real(esta(i))
+      enddo
+     close(20)
+   endif
 !!!!!!!!!!!!!!!!
 
     psi(:) = 0.0d0

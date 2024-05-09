@@ -48,8 +48,8 @@ subroutine integralread(h1emott, h1emopp, coll_w1e_mo, coll_ov1e_mo, coll_r12_mo
   enddo 
  close(11)
 
- h1emott(:,:) = 0d0 !nico
- h1emopp(:,:) = 0d0 !nico
+! h1emott(:,:) = 0d0 !nico
+! h1emopp(:,:) = 0d0 !nico
 
  filett= 'ints/'//impab_filename(1:ilen-1)//'/'//'onee_int_tt.txt'
  filetp= 'ints/'//impab_filename(1:ilen-1)//'/'//'onee_int_tp.txt'
@@ -79,7 +79,7 @@ subroutine integralread(h1emott, h1emopp, coll_w1e_mo, coll_ov1e_mo, coll_r12_mo
       do i = 1, mo_num_t
         do j = 1, mo_num_t
           read(11,*) k,l,w1ea,w1eb,ov1ea,ov1eb
-          coll_w1e_mo(j,i,iz)= dcmplx(w1ea,w1eb) + h1emott(j,i)
+          coll_w1e_mo(j,i,iz)= dcmplx(w1ea,w1eb) !nico+ h1emott(j,i)
           coll_ov1e_mo(j,i,iz)= dcmplx(ov1ea,ov1eb)!!mcoup(izgrid,j,i),movl(izgrid,j,i)
           !write(1113,"(A,2I6,4F20.16)") "j=mo_num,
           !i=mo_num,coll_w1e_and_ov1e__mo(j,i,iz,ib)=",j,i,coll_w1e_mo(j,i,iz,ib),coll_ov1e_mo(j,i,iz,ib)
@@ -115,7 +115,7 @@ subroutine integralread(h1emott, h1emopp, coll_w1e_mo, coll_ov1e_mo, coll_r12_mo
       do i = 1, mo_num_p
         do j = 1, mo_num_p
           read(14,*) k,l,w1ea,w1eb,ov1ea,ov1eb
-          coll_w1e_mo(j+mo_num_t,i+mo_num_t,iz)= dcmplx(w1ea,w1eb) + h1emopp(j,i)
+          coll_w1e_mo(j+mo_num_t,i+mo_num_t,iz)= dcmplx(w1ea,w1eb) !nico+ h1emopp(j,i)
           coll_ov1e_mo(j+mo_num_t,i+mo_num_t,iz)= dcmplx(ov1ea,ov1eb)
         enddo
       enddo

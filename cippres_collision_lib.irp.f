@@ -271,7 +271,6 @@ use propdyn, only : esta
   
   !allocate(coll_couplings(Ndet_total,Ndet_total,n_time))
 
-
   allocate(coll_csf_mat_M(1:Ndet_total,1:Ndet_total))
   allocate(coll_csf_mat_S(1:Ndet_total,1:Ndet_total))
   allocate(coll_csf_mat(1:Ndet_total,1:Ndet_total))
@@ -308,7 +307,19 @@ use propdyn, only : esta
   h1e = dcmplx(0.0D0,0.0D0)!0.0d0
   ov  = dcmplx(0.0D0,0.0D0)!0.0d0
   r12 = dcmplx(0.0D0,0.0D0)!0.0d0
-  w1e(:,:) = coll_w1e_mo(:,:,1) 
+!nico  w1e(:,:) = coll_w1e_mo(:,:,1) 
+
+  do i = 1, mo_num_t
+    do j = 1, mo_num_t
+      w1e(j,i)= h1emott(j,i)
+    enddo
+  enddo
+
+  do i = 1, mo_num_p
+    do j = 1, mo_num_p
+      w1e(j+mo_num_t,i+mo_num_t) =  h1emopp(j,i)
+    enddo
+  enddo
 
   ovmo(:,:) = coll_ov1e_mo(:,:,1)
   r12mo(:,:,:,:) = coll_r12_mo(:,:,:,:,1)
@@ -317,7 +328,7 @@ use propdyn, only : esta
     call lowdin(ne,nea,neb,n_mo,ovmo,w1e,r12mo,detalpha(:,i),detalpha(:,i),detbeta(:,i),detbeta(:,i),ov,h1e,r12)
     esta(i) = h1e + r12
     energy_mat(i,i) = esta(i)
-    esta(i) = 0d0 !nico
+!    esta(i) = 0d0 !nico
   enddo
 
 ! here, 'it' means the zGrid.
@@ -351,7 +362,7 @@ use propdyn, only : esta
 
         call lowdin(ne,nea,neb,n_mo,ovmo,w1e,r12mo,detalpha(:,i),detalpha(:,j),detbeta(:,i),detbeta(:,j),ov,h1e,r12)
         !write(*,'(3(i5,1X),4(f20.10,1X))')it,j,i,h1e,r12
-        coll_csf_mat_M(j,i) = h1e + r12 
+        coll_csf_mat_M(j,i) = (h1e + r12) - esta(i)*ov !nico
         coll_csf_mat_S(j,i) = ov 
       enddo
     enddo
