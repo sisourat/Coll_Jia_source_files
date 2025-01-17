@@ -244,6 +244,7 @@ double complex :: tpestai,tpestaj
 double complex :: ppestai,ppestaj
 integer :: klo, khi, k
 
+
 ! --- INTERPOLATION OF MCOUP MATRIX
       if(timegrid(ksave).lt. time .and. timegrid(ksave+1).gt. time) then
        klo=ksave
@@ -442,7 +443,7 @@ External   AbsABMError
 
 integer :: i, j
 
-integer :: isave_time
+integer :: itime
 
  psidim = nsta
  IntOrder = 8
@@ -470,19 +471,11 @@ enddo
  Psit(:) = psi(:)
 
  RestartABM = .true.
- !if(output_cmd==2) then
  InitStep = abs(timegrid(2)-timegrid(1))
  Abstime = timegrid(2)
- !else
- !InitStep = abs(timegrid(3)-timegrid(2))
- !Abstime = timegrid(3)
- !end if
- !IntPeriod = (timegrid(ntime))/nsave_time
- IntPeriod = (timegrid(ntime)-timegrid(6))/DBLE(nsave_time)
- do isave_time = 1, nsave_time
+ IntPeriod = (timegrid(ntime)-timegrid(6))/DBLE(ntime)
+ do itime = 1, ntime
   call hpsit(Abstime,Psit,dtPsit,PsiDim,LData,IData,RData,CData)
-  !CData= dcmplx(0.0d0,0.0d0)
-  if(output_cmd==1) write(4321,'(A25,5000(f12.6,1X))') "dtPsit(n_tot)=",(cdabs(dtPsit(i))**2,i=1,nsta),sum(cdabs(dtPsit(:))**2)
   call ABM(Psit,dtPsit,PsiDim,IntPeriod,AbsTime,IntOrder,&
                            &InitStep,TolError,RestartABM,Steps,&
                            &RepeatedSteps,ErrorCode,AuxPsi,&
@@ -491,16 +484,15 @@ enddo
 
  !call rk4(hpsit, Abstime, Psit, 0.005d0, PsiDim, timegrid(ntime-3), lData,iData,rData,cData) 
 
- Abstime = Abstime + IntPeriod
+  Abstime = Abstime + IntPeriod
 
- if(ErrorCode /= 0) then
-   write(*,*)'Error in ABM, I stop', ErrorCode
-   stop
- endif
+  if(ErrorCode /= 0) then
+    write(*,*)'Error in ABM, I stop', ErrorCode
+    stop
+  endif
 
- psi(:) = Psit(:)
- !psit_save(:,isave_time) = psi(:)
- enddo ! isave_time
+  psi(:) = Psit(:)
+ enddo ! istime
 
 ! deallocate(mat)
  deallocate(RData,CData,IData,LData)

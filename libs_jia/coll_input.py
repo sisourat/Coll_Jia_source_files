@@ -1,4 +1,4 @@
-import sys 
+import sys
 import numpy as np
 from xml.dom import minidom
 from spineigenfunctions import *

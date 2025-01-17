@@ -13,6 +13,11 @@ use propdyn, only : esta
      endif
  END_PROVIDER 
 
+ BEGIN_PROVIDER [integer, nstatest]
+  implicit none
+   nstatest = 0
+ END_PROVIDER 
+
  BEGIN_PROVIDER [integer, ib_coll]
   implicit none
    ib_coll = 1
@@ -105,12 +110,48 @@ use propdyn, only : esta
      !call ezfio_get_cippres_tgrid(tgrid)
  END_PROVIDER 
 
+ BEGIN_PROVIDER [integer, tmo_num]
+&BEGIN_PROVIDER [integer, pmo_num]
+&BEGIN_PROVIDER [integer, mo_num_t]
+&BEGIN_PROVIDER [integer, mo_num_p]
+&BEGIN_PROVIDER [integer, mo_num_tot]
+  open(unit=10,file='./tmo_energies.txt')
+        read(10,*)tmo_num
+  close(10)
+  open(unit=10,file='./pmo_energies.txt')
+        read(10,*)pmo_num
+  close(10)
+  mo_num_t = tmo_num
+  mo_num_p = pmo_num
+  mo_num_tot = tmo_num + pmo_num
+ END_PROVIDER 
+
+
+ BEGIN_PROVIDER [double precision, tmo_eig, (tmo_num)]
+&BEGIN_PROVIDER [double precision, pmo_eig, (pmo_num)]
+&BEGIN_PROVIDER [double precision, t_ehf]
+&BEGIN_PROVIDER [double precision, p_ehf]
+  integer :: i, j, k
+  open(unit=10,file='./tmo_energies.txt')
+        read(10,*)i
+        do i =1, tmo_num
+          read(10,*)j,tmo_eig(i)
+        enddo
+          read(10,*)t_ehf
+  close(10)
+  open(unit=10,file='./pmo_energies.txt')
+        read(10,*)i
+        do i =1, pmo_num
+          read(10,*)j,pmo_eig(i)
+        enddo
+          read(10,*)p_ehf
+  close(10)
+ END_PROVIDER 
+
  BEGIN_PROVIDER [integer, ntdet]
 &BEGIN_PROVIDER [integer, ntsta]
 &BEGIN_PROVIDER [integer, npdet]
 &BEGIN_PROVIDER [integer, npsta]
-&BEGIN_PROVIDER [integer, mo_num_t]
-&BEGIN_PROVIDER [integer, mo_num_p]
 &BEGIN_PROVIDER [integer, Ndet_total]
 &BEGIN_PROVIDER [integer, elec_alpha_num_t]
 &BEGIN_PROVIDER [integer, elec_beta_num_t]
@@ -216,6 +257,65 @@ use propdyn, only : esta
 
  END_PROVIDER 
 
+
+ BEGIN_PROVIDER [double complex, coll_couplings_nicotest, (nstatest,nstatest,n_time)]
+ use general
+ implicit none
+ integer :: i, j, k, l
+ integer :: ib, ic, it
+
+ double precision :: t1, t2
+
+ logical :: exists
+
+ double complex, allocatable :: coll_w1e_mo(:,:,:), coll_ov1e_mo(:,:,:)
+ double complex, allocatable :: coll_r12_mo(:,:,:,:,:)
+ 
+ double complex, dimension(mo_num_t,mo_num_t) :: h1emott
+ double complex, dimension(mo_num_p,mo_num_p) :: h1emopp
+ double complex, dimension(mo_num_t+mo_num_p,mo_num_t+mo_num_p) :: w1e !ccjia
+ double complex, dimension(mo_num_t+mo_num_p,mo_num_t+mo_num_p) :: ovmo !ccjia
+ double complex, dimension(mo_num_t+mo_num_p,mo_num_t+mo_num_p,mo_num_t+mo_num_p,mo_num_t+mo_num_p) :: r12mo !ccjia
+
+ PROVIDE ezfio_filename !HF_bitmask mo_coef
+
+ allocate(coll_w1e_mo(mo_num_t+mo_num_p,mo_num_t+mo_num_p,n_time))
+ allocate(coll_ov1e_mo(mo_num_t+mo_num_p,mo_num_t+mo_num_p,n_time))
+ allocate(coll_r12_mo(mo_num_t+mo_num_p,mo_num_t+mo_num_p,mo_num_t+mo_num_p,mo_num_t+mo_num_p,n_time))
+
+ coll_w1e_mo = dcmplx(0.0D0,0.0D0)
+ coll_ov1e_mo = dcmplx(0.0D0,0.0D0)
+ coll_r12_mo = dcmplx(0.0D0,0.0D0)
+
+ coll_couplings_nicotest(:,:,:) = dcmplx(0.0D0,0.0D0)
+ if(dabs(b_coll-0.0d0) > 0.0001d0 ) then
+ call integralread1e(h1emott, h1emopp, coll_w1e_mo, coll_ov1e_mo, b_coll, n_time, mo_num_t, mo_num_p)
+
+ !do i = 1, n_time
+ !  write(200,'(100(f20.12,1X))')zgrid(i),coll_w1e_mo(1,1,i),coll_w1e_mo(2,2,i),coll_w1e_mo(30,30,i),coll_w1e_mo(1,30,i)
+ !enddo
+
+
+   print*,'Computing coll_couplings', b_coll
+   call cpu_time(t1)
+   coll_couplings_nicotest(1,1,:) = 2d0*coll_w1e_mo(1,1,:) + coll_w1e_mo(2,2,:)
+   coll_couplings_nicotest(2,2,:) = - tmo_eig(2) + pmo_eig(1) + 2d0*coll_w1e_mo(1,1,:) + coll_w1e_mo(30,30,:)  + 2d0/dsqrt(zgrid(:)**2+b_coll**2) 
+   !!!!coll_couplings_nicotest(2,2,:) = 2d0*coll_w1e_mo(1,1,:) + coll_w1e_mo(30,30,:)  + 2d0/dsqrt(zgrid(:)**2+b_coll**2) 
+   coll_couplings_nicotest(1,2,:) = -coll_w1e_mo(1,30,:) 
+   coll_couplings_nicotest(2,1,:) = -dconjg(coll_w1e_mo(1,30,:))
+
+   call cpu_time(t2)
+   print*,t2-t1
+   print*,' '
+ endif
+
+
+ deallocate(coll_w1e_mo, coll_ov1e_mo, coll_r12_mo)
+
+ END_PROVIDER
+
+
+
 ! BEGIN_PROVIDER [double complex, coll_couplings, (Ndet_total,Ndet_total,n_time)]
 ! BEGIN_PROVIDER [double complex, allocatable :: coll_couplings, (Ndet_total,Ndet_total,n_time)]
  BEGIN_PROVIDER [double complex, coll_couplings, (Ndet_total,Ndet_total,n_time)]
@@ -298,7 +398,8 @@ use propdyn, only : esta
   ncsf = Ndet_total
 
   if(dabs(b_coll-0.0d0) < 0.0001d0 ) goto 1001 !!(to avoid the bcoll==0.0 problem?)
-  call integralread(h1emott, h1emopp, coll_w1e_mo, coll_ov1e_mo, coll_r12_mo, b_coll, n_time, mo_num_t, mo_num_p)
+  call integralread1e(h1emott, h1emopp, coll_w1e_mo, coll_ov1e_mo, b_coll, n_time, mo_num_t, mo_num_p)
+  call integralread2e(coll_r12_mo, b_coll, n_time, mo_num_t, mo_num_p)
 
   nea = elec_alpha_num_t+elec_alpha_num_p !!! consider the T and P=0 ????
   neb = elec_beta_num_t+elec_beta_num_p !!! consider the T and P=0 ????

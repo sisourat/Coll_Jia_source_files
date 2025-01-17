@@ -1,9 +1,8 @@
-subroutine integralread(h1emott, h1emopp, coll_w1e_mo, coll_ov1e_mo, coll_r12_mo, impab, iz_total, mo_num_t, mo_num_p)
+subroutine integralread1e(h1emott, h1emopp, coll_w1e_mo, coll_ov1e_mo, impab, iz_total, mo_num_t, mo_num_p)
   implicit none
 
   double precision :: zg, bg
   double precision :: w1ea,w1eb,ov1ea,ov1eb
-  double precision :: r12a,r12b
   integer :: i, j, k, l, ib, iz
   integer :: mm,nn,oo,pp
  
@@ -12,8 +11,6 @@ subroutine integralread(h1emott, h1emopp, coll_w1e_mo, coll_ov1e_mo, coll_r12_mo
   double complex, dimension(mo_num_t+mo_num_p,mo_num_t+mo_num_p,iz_total), intent(in out) :: coll_w1e_mo, coll_ov1e_mo
   double complex, dimension(mo_num_t,mo_num_t), intent(out) :: h1emott
   double complex, dimension(mo_num_p,mo_num_p), intent(out) :: h1emopp
-  double complex, dimension(mo_num_t+mo_num_p,mo_num_t+mo_num_p,mo_num_t+mo_num_p,mo_num_t+mo_num_p,iz_total), intent(in out) :: coll_r12_mo
- 
 
   character(len=100) :: filett,filetp,filept,filepp,fileread
   character(len=100) :: newfilett,newfilepp
@@ -27,7 +24,6 @@ subroutine integralread(h1emott, h1emopp, coll_w1e_mo, coll_ov1e_mo, coll_r12_mo
  write(impactb_value,"(f10.2)") impab
  impab_filename= Trim(AdjustL(impab_name))//Trim(AdjustL(impactb_value))
  ilen=index(impab_filename,' ')
-
 
  newfilett= 'ints/'//'h1emo_tt.txt'
  open(unit=11,file=newfilett,status='old')
@@ -130,6 +126,31 @@ subroutine integralread(h1emott, h1emopp, coll_w1e_mo, coll_ov1e_mo, coll_r12_mo
   close(12)
   close(13)
   close(14)
+
+end subroutine integralread1e
+
+subroutine integralread2e(coll_r12_mo, impab, iz_total, mo_num_t, mo_num_p)
+  implicit none
+
+  double precision :: zg, bg
+  double precision :: r12a,r12b
+  integer :: i, j, k, l, ib, iz
+  integer :: mm,nn,oo,pp
+ 
+  double precision, intent(in) :: impab 
+  integer, intent(in) :: iz_total, mo_num_t, mo_num_p
+  double complex, dimension(mo_num_t+mo_num_p,mo_num_t+mo_num_p,mo_num_t+mo_num_p,mo_num_t+mo_num_p,iz_total), intent(in out) :: coll_r12_mo
+ 
+  character(len=100) :: filett,filetp,filept,filepp,fileread
+  character(len=100) :: newfilett,newfilepp
+  character(len=100) :: filetwo1,filetwo2,filetwo3,filetwo4
+  character(len=100) :: impactb_value,impab_filename, impab_name
+  integer :: ilen
+
+ impab_name="impactb_"
+ write(impactb_value,"(f10.2)") impab
+ impab_filename= Trim(AdjustL(impab_name))//Trim(AdjustL(impactb_value))
+ ilen=index(impab_filename,' ')
 
 ! test r12mo rep.
 ! 
@@ -386,4 +407,4 @@ close(26)
 !  coll_r12_mo(:,:,:,:,:) = 0d0 !nico
   print*,'read two e int ok'
 
-end subroutine integralread
+end subroutine integralread2e
