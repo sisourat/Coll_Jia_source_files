@@ -94,12 +94,15 @@ program cippres_prop_collision_nicotest
       nf = stamax_bound
    endif
 !!!
-  nstatest = 2
+  n_tsta = 17
+  n_tpsta = 11
+  n_psta = 0
+
+  nstatest = n_tsta + n_tpsta + n_psta
   touch nstatest
   nsta = nstatest
-    n_tsta = 1
-    n_tpsta = 0
-    n_psta = 1
+
+
   vproj = v_coll
 
   allocate(mcoup(ntime,nsta,nsta),timegrid(ntime),esta(nsta))
@@ -110,19 +113,11 @@ program cippres_prop_collision_nicotest
   timegrid(1:ntime) = tgrid(1:n_time)
   esta=0.0d0
   !do i = 1, tmo_num
-  !  esta(i) = tmo_eig(i)
+  !  esta(i) = tmo_eig(i+1)
   !enddo
   !do i = 1, pmo_num
   !  esta(i+tmo_num) = pmo_eig(i)
   !enddo
-
-  !!tmo_eig(2) = -0.078925734200000! -0.237691366041379
-  tmo_eig(2) = -0.237691366041379
-  pmo_eig(1) = -0.499859669283984
-
-  esta(1) = 0.0d0
-  esta(2) = 0.0d0 !!!- tmo_eig(2) + pmo_eig(1)
-
 
 !!!
 
@@ -144,10 +139,18 @@ program cippres_prop_collision_nicotest
    if(ib==1) then
      open(unit=20,file='Prop_collision.out')
       write(20,*) n_bimp, nsta
-      do i = 1, nsta
-        write(*,*)"esta:",i,real(esta(i))
+      do i = 1, n_tsta
+        write(*,*)"T esta:",i,real(esta(i))
         write(20,*)real(esta(i))
       enddo
+      do i = 1, n_tpsta
+        write(*,*)"P esta:",i+n_tsta,real(esta(i+n_tsta))
+        write(20,*)real(esta(i+n_tsta))
+      enddo
+      !do i = 1, n_psta
+      !  write(*,*)"P esta:",i,real(pmo_eig(i))
+      !  write(20,*)real(esta(i))
+      !enddo
      close(20)
    endif
 !!!!!!!!!!!!!!!!

@@ -1,6 +1,6 @@
 use bitmasks ! you need to include the bitmasks_module.f90 features
 use general
-use propdyn, only : esta
+use propdyn, only : esta, n_tsta, n_psta, n_tpsta
 
  BEGIN_PROVIDER [integer, n_sta_coll_max]
   implicit none
@@ -262,6 +262,7 @@ use propdyn, only : esta
  use general
  implicit none
  integer :: i, j, k, l
+ integer :: i1, i2, j1, j2, jmo, j1mo, j2mo
  integer :: ib, ic, it
 
  double precision :: t1, t2
@@ -291,18 +292,97 @@ use propdyn, only : esta
  if(dabs(b_coll-0.0d0) > 0.0001d0 ) then
  call integralread1e(h1emott, h1emopp, coll_w1e_mo, coll_ov1e_mo, b_coll, n_time, mo_num_t, mo_num_p)
 
- !do i = 1, n_time
- !  write(200,'(100(f20.12,1X))')zgrid(i),coll_w1e_mo(1,1,i),coll_w1e_mo(2,2,i),coll_w1e_mo(30,30,i),coll_w1e_mo(1,30,i)
- !enddo
+! do i = 1, n_tsta
+!   tmo_eig(i) =  h1emott(i+1,i+1)  ! +1 to remove the core orbital
+! enddo
+ do i = 1, mo_num_p
+   pmo_eig(i) = h1emopp(i,i)
+ enddo
 
+   esta(1) = 0d0
+ do i = 2, n_tsta
+   esta(i) = - tmo_eig(2) + tmo_eig(i+1)
+ enddo
 
-   print*,'Computing coll_couplings', b_coll
-   call cpu_time(t1)
-   coll_couplings_nicotest(1,1,:) = 2d0*coll_w1e_mo(1,1,:) + coll_w1e_mo(2,2,:)
-   coll_couplings_nicotest(2,2,:) = - tmo_eig(2) + pmo_eig(1) + 2d0*coll_w1e_mo(1,1,:) + coll_w1e_mo(30,30,:)  + 2d0/dsqrt(zgrid(:)**2+b_coll**2) 
-   !!!!coll_couplings_nicotest(2,2,:) = 2d0*coll_w1e_mo(1,1,:) + coll_w1e_mo(30,30,:)  + 2d0/dsqrt(zgrid(:)**2+b_coll**2) 
-   coll_couplings_nicotest(1,2,:) = -coll_w1e_mo(1,30,:) 
-   coll_couplings_nicotest(2,1,:) = -dconjg(coll_w1e_mo(1,30,:))
+ do i = 1, n_tpsta
+   esta(i+n_tsta) = - tmo_eig(2) + pmo_eig(i)
+ enddo
+
+ print*,'Computing coll_couplings', b_coll
+ call cpu_time(t1)
+
+ ! GS-GS
+
+ coll_couplings_nicotest(1,1,:) = 2d0*coll_w1e_mo(1,1,:) + coll_w1e_mo(2,2,:)
+
+ ! T - T & GS - T
+  do i = 2, n_tsta
+    coll_couplings_nicotest(i,i,:) = & 
+    & + 2d0*coll_w1e_mo(1,1,:) + coll_w1e_mo(i+1,i+1,:)  &
+    & + 0d0/dsqrt(zgrid(:)**2+b_coll**2)
+  
+    coll_couplings_nicotest(i,1,:) = coll_w1e_mo(2,i+1,:)
+    coll_couplings_nicotest(1,i,:) = coll_w1e_mo(i+1,2,:)
+  enddo
+  
+  do i = 2, n_tsta - 1
+    do j = i+1, n_tsta
+    coll_couplings_nicotest(j,i,:) = coll_w1e_mo(i+1,j+1,:)
+    coll_couplings_nicotest(i,j,:) = coll_w1e_mo(j+1,i+1,:)
+    enddo
+  enddo
+  
+  ! GS - P
+  
+  do i = 1, n_tpsta
+  
+    j  = i + n_tsta
+    jmo = i + mo_num_t
+  
+    coll_couplings_nicotest(j,j,:) =  &
+    & + 2d0*coll_w1e_mo(1,1,:) + coll_w1e_mo(jmo,jmo,:) &
+    & + 2d0/dsqrt(zgrid(:)**2+b_coll**2)! &
+    !& - cdabs(coll_ov1e_mo(1,jmo,:))**2/dsqrt(zgrid(:)**2+b_coll**2)
+  
+    coll_couplings_nicotest(j,1,:) = coll_w1e_mo(2,jmo,:)! &
+    !& + (- tmo_eig(1) + pmo_eig(i) + 2d0*coll_w1e_mo(1,1,:)) * coll_ov1e_mo(2,jmo,:) &
+    !& + 2d0*coll_ov1e_mo(2,jmo,:)/dsqrt(zgrid(:)**2+b_coll**2)
+  
+    coll_couplings_nicotest(1,j,:) = coll_w1e_mo(jmo,2,:) !&
+    !& + (- tmo_eig(1) + pmo_eig(i) + 2d0*coll_w1e_mo(1,1,:)) * coll_ov1e_mo(jmo,2,:) &
+    !& + 2d0*coll_ov1e_mo(jmo,2,:)/dsqrt(zgrid(:)**2+b_coll**2)
+  
+  enddo
+  
+  ! T- P
+  
+  do i = 1, n_tpsta
+  
+    j  = i + n_tsta
+    jmo = i + mo_num_t
+  
+    do k = 2, n_tsta
+  
+      coll_couplings_nicotest(j,k,:) = coll_w1e_mo(k+1,jmo,:)
+      coll_couplings_nicotest(k,j,:) = coll_w1e_mo(jmo,k+1,:) 
+  
+    enddo
+  enddo
+  
+  
+  ! P- P
+  do i1 = 1, n_tpsta - 1
+    j1  = i1 + n_tsta
+    j1mo = i + mo_num_t
+    do i2 = i+1, n_tpsta
+      j2  = i2 + n_tsta
+      j2mo = i + mo_num_t
+      coll_couplings_nicotest(j2,j1,:) = coll_w1e_mo(j1mo,j2mo,:) !&
+    !& - coll_ov1e_mo(1,j1mo,:)*coll_ov1e_mo(1,j2mo,:)/dsqrt(zgrid(:)**2+b_coll**2)
+      coll_couplings_nicotest(j1,j2,:) = coll_w1e_mo(j2mo,j1mo,:) !&
+    !& - coll_ov1e_mo(j1mo,1,:)*coll_ov1e_mo(j2mo,1,:)/dsqrt(zgrid(:)**2+b_coll**2)
+    enddo
+  enddo
 
    call cpu_time(t2)
    print*,t2-t1
