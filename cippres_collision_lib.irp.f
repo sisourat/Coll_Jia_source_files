@@ -15,7 +15,7 @@ use propdyn, only : esta, n_tsta, n_psta, n_tpsta
 
  BEGIN_PROVIDER [integer, nstatest]
   implicit none
-   nstatest = 0
+   nstatest = 1000
  END_PROVIDER 
 
  BEGIN_PROVIDER [integer, ib_coll]
@@ -292,11 +292,11 @@ use propdyn, only : esta, n_tsta, n_psta, n_tpsta
  if(dabs(b_coll-0.0d0) > 0.0001d0 ) then
  call integralread1e(h1emott, h1emopp, coll_w1e_mo, coll_ov1e_mo, b_coll, n_time, mo_num_t, mo_num_p)
 
-! do i = 1, n_tsta
-!   tmo_eig(i) =  h1emott(i+1,i+1)  ! +1 to remove the core orbital
-! enddo
+ do i = 1, n_tsta
+   write(*,*)i,"Target H1E = ", h1emott(i,i)
+ enddo
  do i = 1, mo_num_p
-   pmo_eig(i) = h1emopp(i,i)
+   write(*,*)i,"Proj H1E = ", h1emopp(i,i)
  enddo
 
    esta(1) = 0d0
